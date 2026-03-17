@@ -1,0 +1,47 @@
+name: chai-suutta-predictor CI/CD
+run-name: chai-sutta-predictor CI/CD by ${{ github.actor }}-${{ github.ref }}
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  modal_training:
+    name: modal training ci
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r chai-sutta-modal/requirements.txt
+
+      - name: Run training script
+        run: python chai-sutta-modal/src/train_model.py
+
+      - name: artifact upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: chai-sutta-modal/models/
+
+      - name: az login using federated credentials
+        uses: azure/login@v1
+        with:
+          client-id: "6863db71-fcbf-4466-8046-997de5b919c3"
+          tenant-id: "9fc5e873-a267-48bf-a6dd-9c332cf29837"
+          subscription-id: "a5e53954-5571-4fa4-9dd5-bfc7eda513a4"
+
+      - name: Upload models to storage account
+        run: |
+          az storage blob upload-batch  -c 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/models/'
