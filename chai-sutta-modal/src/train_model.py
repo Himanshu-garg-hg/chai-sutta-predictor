@@ -54,4 +54,4 @@ with open(gender_encoder_path, "wb") as f:
 with open(habit_encoder_path, "wb") as f:
     pickle.dump(le_habit, f)
 
-print(f"✅ Model saved in {models_dir} folder")
+print(f"[SUCCESS] Model saved in {models_dir} folder")
