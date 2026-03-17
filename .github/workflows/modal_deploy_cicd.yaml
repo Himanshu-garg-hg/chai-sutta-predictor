@@ -3,10 +3,10 @@ run-name: chai-sutta-predictor CI/CD by ${{ github.actor }}-${{ github.ref }}
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   modal_training:

@@ -5,10 +5,10 @@ run-name: Terraform CI/CD by ${{ github.actor }}-${{ github.ref }}
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   terraform:
@@ -41,5 +41,5 @@ jobs:
         run: terraform -chdir=terraform-k8/root_module plan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform -chdir=terraform-k8/root_module apply -auto-approve
