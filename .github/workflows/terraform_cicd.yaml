@@ -30,19 +30,21 @@ jobs:
           client-id: "6863db71-fcbf-4466-8046-997de5b919c3"
           tenant-id: "9fc5e873-a267-48bf-a6dd-9c332cf29837"
           subscription-id: "a5e53954-5571-4fa4-9dd5-bfc7eda513a4"
+      
+      - run: cd terraform-k8/root_module
 
       - name: Terraform Init
-        run: terraform -chdir=terraform-k8/root_module init
+        run: terraform  init 
 
       - name: Terraform fmt
-        run: terraform -chdir=terraform-k8/root_module fmt --recursive
+        run: terraform fmt --recursive  
 
       - name: Terraform validate
-        run: terraform -chdir=terraform-k8/root_module validate
+        run: terraform validate
 
       - name: Terraform Plan
-        run: terraform -chdir=terraform-k8/root_module plan
+        run: terraform plan 
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        run: terraform -chdir=terraform-k8/root_module apply -auto-approve
+        run: terraform apply -auto-approve 
