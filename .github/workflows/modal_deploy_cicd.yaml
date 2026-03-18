@@ -68,6 +68,9 @@ jobs:
           name: models
           destination: ./chai-sutta-modal/
 
+      - run: ls -R ./chai-sutta-modal/
+      - run: ls -R ./chai-sutta-modal/models/
+
       - name: az login using federated credentials
         uses: azure/login@v1
         with:
