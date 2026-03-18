@@ -1,4 +1,4 @@
-name: chai-suutta-predictor CI/CD
+name: chai-sutta-predictor CI/CD
 run-name: chai-sutta-predictor CI/CD by ${{ github.actor }}-${{ github.ref }}
 on:
   push:
@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   modal_training:
