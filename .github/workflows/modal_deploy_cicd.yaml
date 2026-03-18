@@ -11,7 +11,7 @@ on:
 
 permissions:
   id-token: write
-  
+
 jobs:
   modal_training:
     name: modal training ci
@@ -48,4 +48,4 @@ jobs:
 
       - name: Upload models to storage account
         run: |
-          az storage blob upload-batch  -c 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/models/'
+          az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/models/'
