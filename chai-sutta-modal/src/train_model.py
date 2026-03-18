@@ -3,16 +3,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 import pickle
-import os
 from pathlib import Path
 
 # Get the project root directory
-project_root = Path(__file__).parent.parent
-data_path = project_root / "data" / "chai_sutta_data.csv"
-models_dir = project_root / "models"
-
-# Create models folder if not exists
+models_dir = Path(__file__).resolve().parents[1] / "models"
 models_dir.mkdir(parents=True, exist_ok=True)
+
+data_path = Path(__file__).resolve().parents[1] / "data" / "chai_sutta_data.csv"
 
 # Load dataset
 print(f"Loading dataset from: {data_path}")
@@ -41,17 +38,13 @@ accuracy = model.score(X_test, y_test)
 print(f"Model Accuracy: {accuracy}")
 
 # Save model
-model_path = models_dir / "chai_sutta_model.pkl"
-gender_encoder_path = models_dir / "gender_encoder.pkl"
-habit_encoder_path = models_dir / "habit_encoder.pkl"
-
-with open(model_path, "wb") as f:
+with open(models_dir / "chai_sutta_model.pkl", "wb") as f:
     pickle.dump(model, f)
 
-with open(gender_encoder_path, "wb") as f:
+with open(models_dir / "gender_encoder.pkl", "wb") as f:
     pickle.dump(le_gender, f)
 
-with open(habit_encoder_path, "wb") as f:
+with open(models_dir / "habit_encoder.pkl", "wb") as f:
     pickle.dump(le_habit, f)
 
 print(f"[SUCCESS] Model saved in {models_dir} folder")
