@@ -60,8 +60,7 @@ jobs:
     
       - name: Install Docker Buildx
         uses: docker/setup-buildx-action@v2
-        # uses: docker/setup-qemu-action@v2
-        # uses: docker/setup-docker-action@v4
+
 
       - name: copy model files from previous job
         uses: actions/download-artifact@v4
@@ -86,3 +85,31 @@ jobs:
           context: ./chai-sutta-modal
           push: true
           tags: modalacr.azurecr.io/chai-sutta-predictor-image:latest
+
+  modal_deployment_kubernetes:
+    name: modal deployment on kubernetes
+    runs-on: ubuntu-latest
+    needs: modal_image_build_and_deploy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: az login using federated credentials
+        uses: azure/login@v1
+        with:
+          client-id: "6863db71-fcbf-4466-8046-997de5b919c3"
+          tenant-id: "9fc5e873-a267-48bf-a6dd-9c332cf29837"
+          subscription-id: "a5e53954-5571-4fa4-9dd5-bfc7eda513a4"
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+      - name: Get AKS credentials
+        run: az aks get-credentials --resource-group k8_modal_rg --name k8_modal_aks
+
+      - name: Deploy to AKS using kubectl
+        run: |
+          kubectl apply -f kubernetes/deployment.yaml
+          kubectl apply -f kubernetes/service.yaml
