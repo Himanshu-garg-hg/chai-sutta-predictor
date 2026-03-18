@@ -44,6 +44,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
+  bootstrap_profile {
+    container_registry_id = azurerm_container_registry.acr.id
+  }
+
   identity {
     type = "SystemAssigned"
   }
