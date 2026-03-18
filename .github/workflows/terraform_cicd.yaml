@@ -35,16 +35,21 @@ jobs:
 
       - name: Terraform Init
         run: terraform  init 
+        working-directory: terraform-k8/root_module
 
       - name: Terraform fmt
-        run: terraform fmt --recursive  
+        run: terraform fmt --recursive 
+        working-directory: terraform-k8/root_module 
 
       - name: Terraform validate
         run: terraform validate
+        working-directory: terraform-k8/root_module
 
       - name: Terraform Plan
         run: terraform plan 
+        working-directory: terraform-k8/root_module
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform apply -auto-approve 
+        working-directory: terraform-k8/root_module
