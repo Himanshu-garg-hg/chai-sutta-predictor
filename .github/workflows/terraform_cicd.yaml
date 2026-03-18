@@ -11,6 +11,8 @@ on:
       - master
   workflow_dispatch:
 
+permissions:
+  id-token: write
 jobs:
   terraform:
     name: terraform ci
