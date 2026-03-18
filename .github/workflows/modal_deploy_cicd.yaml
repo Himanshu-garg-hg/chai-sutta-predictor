@@ -50,8 +50,8 @@ jobs:
         run: |
           az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/models/'
 
-  modal_image_build_and_deploy:
-    name: modal image build and deploy
+  modal_image_build:
+    name: modal image build
     runs-on: ubuntu-latest
     needs: modal_training_upload_storage_account
     steps:
@@ -89,7 +89,7 @@ jobs:
   modal_deployment_kubernetes:
     name: modal deployment on kubernetes
     runs-on: ubuntu-latest
-    needs: modal_image_build_and_deploy
+    needs: modal_image_build
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -114,6 +114,16 @@ jobs:
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
 
-      - name: get service public IP
+      - name: wait for service public IP
         run: |
-          kubectl get service chai-sutta-modal-service
+          for i in {1..60}; do
+            IP=$(kubectl get service chai-sutta-modal-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -n "$IP" ]; then
+              echo "public IP: $IP"
+              exit 0
+            fi
+            echo "waiting for public IP..."
+            sleep 10
+          done
+          echo "timed out waiting for public IP" >&2
+          exit 1

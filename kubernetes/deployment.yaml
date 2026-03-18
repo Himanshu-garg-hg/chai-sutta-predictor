@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: chai-sutta-modal-container
-        image: modalcontainerreg.azurecr.io/chai-sutta-predictor-image:latest
+        image: modalacr.azurecr.io/chai-sutta-predictor-image:latest
         ports:
         - containerPort: 5000
