@@ -4,11 +4,11 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_storage_account" "sa" {
-    name = var.storage_account_name
-    resource_group_name = azurerm_resource_group.rg.name    
-    location = azurerm_resource_group.rg.location
-    account_tier = "Standard"
-    account_replication_type = "LRS" 
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }
 
 resource "azurerm_storage_container" "container" {
@@ -19,11 +19,11 @@ resource "azurerm_storage_container" "container" {
 
 
 resource "azurerm_container_registry" "acr" {
-    name = var.acr_name
-    resource_group_name = azurerm_resource_group.rg.name
-    location = azurerm_resource_group.rg.location
-    sku = "Basic"  
-    admin_enabled = true
+  name                = var.acr_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Basic"
+  admin_enabled       = true
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
@@ -36,6 +36,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name       = "default"
     node_count = var.node_count
     vm_size    = var.vm_size
+
+    upgrade_settings {
+      max_surge                     = "33%"
+      drain_timeout_in_minutes      = "0"
+      node_soak_duration_in_minutes = "0"
+    }
   }
 
   identity {

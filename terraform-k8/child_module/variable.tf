@@ -36,6 +36,6 @@ variable "acr_name" {
 }
 
 variable "storage_account_name" {
-   description = "storage_account_name"
-   type = string
+  description = "storage_account_name"
+  type        = string
 }
