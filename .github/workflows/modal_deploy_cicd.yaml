@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: models
-          path: chai-sutta-modal/models/
+          path: chai-sutta-modal/
 
       - name: az login using federated credentials
         uses: azure/login@v1
@@ -48,7 +48,7 @@ jobs:
 
       - name: Upload models to storage account
         run: |
-          az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/models/'
+          az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/'
 
   modal_image_build:
     name: modal image build
@@ -66,10 +66,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: models
-          destination: ./chai-sutta-modal/
+          path: ./chai-sutta-modal/
 
       - run: ls -R ./chai-sutta-modal/
-      - run: ls -R ./chai-sutta-modal/models/
 
       - name: az login using federated credentials
         uses: azure/login@v1
