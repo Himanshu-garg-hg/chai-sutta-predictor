@@ -113,3 +113,7 @@ jobs:
         run: |
           kubectl apply -f kubernetes/deployment.yaml
           kubectl apply -f kubernetes/service.yaml
+
+      - name: get service public IP
+        run: |
+          kubectl get service chai-sutta-modal-service
