@@ -89,6 +89,7 @@ jobs:
         with:
           context: ./chai-sutta-modal
           push: true
+          build-args: MODEL_VERSION=v${{ github.run_number }}
           tags: |
             modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.run_number }}
             modalacr.azurecr.io/chai-sutta-predictor-image:latest
