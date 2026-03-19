@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r chai-sutta-modal/requirements.txt
-          
+
 
       - name: Run training script
         run: |
@@ -92,10 +92,6 @@ jobs:
           tags: |
             modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.run_number }}
             modalacr.azurecr.io/chai-sutta-predictor-image:latest
-
-      - name: Run Docker container to list model files
-        run: |
-          docker run -it modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.run_number }} ls /app/models
 
   modal_deployment_kubernetes:
     name: modal deployment on kubernetes
