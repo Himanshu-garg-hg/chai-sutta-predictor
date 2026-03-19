@@ -43,7 +43,7 @@ jobs:
       - name: artifact upload
         uses: actions/upload-artifact@v4
         with:
-          name: models-${{ env.MODEL_VERSION }}
+          name: models
           path: chai-sutta-modal/
 
       - name: az login using federated credentials
@@ -55,7 +55,7 @@ jobs:
 
       - name: Upload models to storage account
         run: |
-          az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/'
+          az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/models'
 
       - name: Verify all model versions in storage
         run: |
@@ -77,11 +77,15 @@ jobs:
       - name: Install Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Debug - Show MODEL_VERSION
+        run: |
+          echo "MODEL_VERSION env variable: ${{ env.MODEL_VERSION }}"
+          echo "From output: ${{ needs.modal_training_upload_storage_account.outputs.MODEL_VERSION }}"
 
       - name: copy model files from previous job
         uses: actions/download-artifact@v4
         with:
-          name: models-${{ env.MODEL_VERSION }}
+          name: models
           path: ./chai-sutta-modal/
 
       - run: ls -R ./chai-sutta-modal/
