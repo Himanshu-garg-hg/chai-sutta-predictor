@@ -1,12 +1,6 @@
 name: chai-sutta-predictor CI/CD
-run-name: chai-sutta-predictor CI/CD by ${{ github.actor }}-${{ github.ref }}
+run-name: chai-sutta-predictor CI/CD by ${{ github.actor }} with model version - ${{ github.run_number }}
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
   workflow_dispatch:
 
 permissions:
@@ -16,6 +10,8 @@ jobs:
   modal_training_upload_storage_account:
     name: modal training ci
     runs-on: windows-latest
+    outputs:
+      MODEL_VERSION: ${{ steps.model_version.outputs.MODEL_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,13 +26,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r chai-sutta-modal/requirements.txt
 
+      - name: Set model version
+        run: echo "MODEL_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Set model version output
+        id: model_version
+        run: echo "MODEL_VERSION=v${{ github.run_number }}" >> $GITHUB_OUTPUT
+
       - name: Run training script
         run: python chai-sutta-modal/src/train_model.py
 
       - name: artifact upload
         uses: actions/upload-artifact@v4
         with:
-          name: models
+          name: models-${{ env.MODEL_VERSION }}
           path: chai-sutta-modal/
 
       - name: az login using federated credentials
@@ -50,9 +53,16 @@ jobs:
         run: |
           az storage blob upload-batch  -d 'chai-sutta-container' --account-name 'modalstorageacc' -s './chai-sutta-modal/'
 
+      - name: Verify all model versions in storage
+        run: |
+          echo "📦 All model versions in Azure Storage:"
+          az storage blob list --container-name 'chai-sutta-container' --account-name 'modalstorageacc' --query "[].name" -o table
+
   modal_image_build:
     name: modal image build
     runs-on: ubuntu-latest
+    env:
+      MODEL_VERSION: ${{ needs.modal_training_upload_storage_account.outputs.MODEL_VERSION }}
     needs: modal_training_upload_storage_account
     steps:
       - name: Checkout code
@@ -65,7 +75,7 @@ jobs:
       - name: copy model files from previous job
         uses: actions/download-artifact@v4
         with:
-          name: models
+          name: models-${{ env.MODEL_VERSION }}
           path: ./chai-sutta-modal/
 
       - run: ls -R ./chai-sutta-modal/
@@ -86,12 +96,16 @@ jobs:
         with:
           context: ./chai-sutta-modal
           push: true
-          tags: modalacr.azurecr.io/chai-sutta-predictor-image:latest
+          tags: |
+            modalacr.azurecr.io/chai-sutta-predictor-image:${{ env.MODEL_VERSION }}
+            modalacr.azurecr.io/chai-sutta-predictor-image:latest
 
   modal_deployment_kubernetes:
     name: modal deployment on kubernetes
     runs-on: ubuntu-latest
     needs: modal_image_build
+    env:
+      MODEL_VERSION: ${{ needs.modal_training_upload_storage_account.outputs.MODEL_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

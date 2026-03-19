@@ -1,6 +1,7 @@
-import os
-import pickle
 from flask import Flask, request, jsonify, render_template_string
+import pickle
+import numpy as np
+import os
 from pathlib import Path
 
 app = Flask(__name__)
@@ -9,18 +10,15 @@ app = Flask(__name__)
 BASE_DIR = Path(__file__).parent.parent
 MODELS_DIR = BASE_DIR / "models"
 
-model_version = os.getenv("MODEL_VERSION", "v1")
-
 # Load model & encoders with error handling
 try:
-    model = pickle.load(open(MODELS_DIR / f"chai_sutta_model_{model_version}.pkl", "rb"))
-    le_gender = pickle.load(open(MODELS_DIR / f"gender_encoder_{model_version}.pkl", "rb"))
-    le_habit = pickle.load(open(MODELS_DIR / f"habit_encoder_{model_version}.pkl", "rb"))
+    model = pickle.load(open(MODELS_DIR / "chai_sutta_model.pkl", "rb"))
+    le_gender = pickle.load(open(MODELS_DIR / "gender_encoder.pkl", "rb"))
+    le_habit = pickle.load(open(MODELS_DIR / "habit_encoder.pkl", "rb"))
     print("✅ Models loaded successfully")
 except FileNotFoundError as e:
     print(f"❌ Error loading models: {e}")
     raise
-
 
 # Simple HTML UI
 HTML_PAGE = """
@@ -94,4 +92,3 @@ def predict():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
-    
