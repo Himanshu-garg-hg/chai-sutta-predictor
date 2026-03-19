@@ -41,15 +41,24 @@ model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
 print(f"Model Accuracy: {accuracy}")
 
-# Save model + encoders using versioned filenames
+# Save model + encoders in a SINGLE file
 model_path = models_dir / f"chai_sutta_model_{model_version}.pkl"
+
+# Create a dictionary with all components
+model_package = {
+    "model": model,
+    "gender_encoder": le_gender,
+    "habit_encoder": le_habit,
+    "version": model_version,
+    "accuracy": accuracy
+}
+
 with open(model_path, "wb") as f:
-    pickle.dump(model, f)
+    pickle.dump(model_package, f)
 
-with open(models_dir / f"gender_encoder_{model_version}.pkl", "wb") as f:
-    pickle.dump(le_gender, f)
-
-with open(models_dir / f"habit_encoder_{model_version}.pkl", "wb") as f:
-    pickle.dump(le_habit, f)
-
-print(f"[SUCCESS] Model saved: {model_path}")
+print(f"[SUCCESS] Model package saved: {model_path}")
+print(f"  ├─ Model")
+print(f"  ├─ Gender Encoder")
+print(f"  ├─ Habit Encoder")
+print(f"  ├─ Version: {model_version}")
+print(f"  └─ Accuracy: {accuracy:.4f}")

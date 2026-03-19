@@ -34,7 +34,11 @@ jobs:
         run: echo "MODEL_VERSION=v${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Run training script
-        run: python chai-sutta-modal/src/train_model.py
+        run: |
+          echo "Training ML Model with version: v${{ github.run_number }}"
+          python chai-sutta-modal/src/train_model.py
+        env:
+          MODEL_VERSION: v${{ github.run_number }}
 
       - name: artifact upload
         uses: actions/upload-artifact@v4

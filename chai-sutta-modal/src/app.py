@@ -11,14 +11,25 @@ MODELS_DIR = BASE_DIR / "models"
 
 model_version = os.getenv("MODEL_VERSION", "v1")
 
-# Load model & encoders with error handling
+# Load model package with error handling
 try:
-    model = pickle.load(open(MODELS_DIR / f"chai_sutta_model_{model_version}.pkl", "rb"))
-    le_gender = pickle.load(open(MODELS_DIR / f"gender_encoder_{model_version}.pkl", "rb"))
-    le_habit = pickle.load(open(MODELS_DIR / f"habit_encoder_{model_version}.pkl", "rb"))
-    print("✅ Models loaded successfully")
+    model_package_path = MODELS_DIR / f"chai_sutta_model_{model_version}.pkl"
+    with open(model_package_path, "rb") as f:
+        model_package = pickle.load(f)
+    
+    # Extract components from package
+    model = model_package["model"]
+    le_gender = model_package["gender_encoder"]
+    le_habit = model_package["habit_encoder"]
+    
+    print(f"✅ Models loaded successfully from {model_package_path}")
+    print(f"   Version: {model_package.get('version', 'unknown')}")
+    print(f"   Accuracy: {model_package.get('accuracy', 'N/A'):.4f}")
 except FileNotFoundError as e:
     print(f"❌ Error loading models: {e}")
+    raise
+except Exception as e:
+    print(f"❌ Error extracting model components: {e}")
     raise
 
 
