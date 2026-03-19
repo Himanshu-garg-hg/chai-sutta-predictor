@@ -10,8 +10,6 @@ jobs:
   modal_training_upload_storage_account:
     name: modal training ci
     runs-on: windows-latest
-    # outputs:
-    #   MODEL_VERSION: ${{ steps.model_version.outputs.MODEL_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,13 +23,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r chai-sutta-modal/requirements.txt
-
-      # - name: Set model version
-      #   run: echo "MODEL_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
-
-      # - name: Set model version output
-      #   id: model_version
-      #   run: echo "MODEL_VERSION=v${{ github.run_number }}" >> $GITHUB_OUTPUT
 
       - name: Run training script
         run: |
@@ -100,6 +91,10 @@ jobs:
           tags: |
             modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.run_number }}
             modalacr.azurecr.io/chai-sutta-predictor-image:latest
+
+      - name: Run Docker container to list model files
+        run: |
+          docker run -it modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.run_number }} ls /app/models
 
   modal_deployment_kubernetes:
     name: modal deployment on kubernetes
