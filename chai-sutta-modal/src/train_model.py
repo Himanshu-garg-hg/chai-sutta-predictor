@@ -57,8 +57,8 @@ with open(model_path, "wb") as f:
     pickle.dump(model_package, f)
 
 print(f"[SUCCESS] Model package saved: {model_path}")
-print(f"  ├─ Model")
-print(f"  ├─ Gender Encoder")
-print(f"  ├─ Habit Encoder")
-print(f"  ├─ Version: {model_version}")
-print(f"  └─ Accuracy: {accuracy:.4f}")
+print(f"  - Model")
+print(f"  - Gender Encoder")
+print(f"  - Habit Encoder")
+print(f"  - Version: {model_version}")
+print(f"  - Accuracy: {accuracy:.4f}")
