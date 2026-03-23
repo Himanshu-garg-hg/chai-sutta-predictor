@@ -1,2 +1,3 @@
-/chai-sutta-modal/model/
-/chai-sutta-modal/.venv/
+/chai-sutta-modal-*/model/
+/chai-sutta-modal-*/.venv/
+/chai-sutta-modal-*/src/mlflow*
