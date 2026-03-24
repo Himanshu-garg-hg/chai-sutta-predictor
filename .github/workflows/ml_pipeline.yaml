@@ -1,0 +1,66 @@
+name: Modal training pipeline
+
+on:
+  workflow_dispatch:
+    
+permissions:
+  id-token: write
+
+jobs:
+  train_modal:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r chai-sutta-modal-mlflow/requirements.txt
+
+    - name: Run training script
+      run: |
+        echo "Training ML Model with version: v${{ github.run_number }}"
+        python chai-sutta-modal-mlflow/src/train_model.py
+      env:
+        MODEL_VERSION: v${{ github.run_number }}
+        MLFLOW_TRACKING_URI: ./mlruns
+
+    - name: Upload MLFLOW artifacts (debug)
+      uses: actions/upload-artifact@v4
+      with:
+        name: mlflow-${{ github.run_number }}
+        path: mlruns/
+
+    - name: artifact Modal upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: models
+        path: chai-sutta-modal-mlflow/models/
+
+    - name: az login using federated credentials
+      uses: azure/login@v1
+      with:
+        client-id: "6863db71-fcbf-4466-8046-997de5b919c3"
+        tenant-id: "9fc5e873-a267-48bf-a6dd-9c332cf29837"
+        subscription-id: "a5e53954-5571-4fa4-9dd5-bfc7eda513a4"
+
+    - name: Upload MLflow logs to storage
+      run: |
+        az storage blob upload-batch \
+          -d chai-sutta-container/mlflow/v${{ github.run_number }} \
+          --account-name modalstorageacc \
+          -s ./mlruns
+
+    - name: Upload model artifacts
+      run: |
+        az storage blob upload-batch \
+          -d chai-sutta-container/models/v${{ github.run_number }} \
+          --account-name modalstorageacc \
+          -s ./chai-sutta-modal-mlflow/models
