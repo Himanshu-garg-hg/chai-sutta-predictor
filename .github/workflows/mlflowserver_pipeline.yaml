@@ -1,5 +1,7 @@
 name: 1. MLflow Server Deploy
 
+run-name: MLflow Server Deploy by ${{ github.actor }}
+
 on:
   push:
     paths:
@@ -52,6 +54,7 @@ jobs:
         run: |
           kubectl apply -f kubernetes/mlflowserver/deployment.yaml
           kubectl apply -f kubernetes/mlflowserver/service.yaml
+          kubectl rollout restart deployment mlflow-server-deployment
 
       - name: Get MLflow IP
         id: get_ip
