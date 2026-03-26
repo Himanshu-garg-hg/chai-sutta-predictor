@@ -1,4 +1,4 @@
-name: Terraform CI/CD
+name: Terraform Infrastructure
 
 run-name: Terraform CI/CD by ${{ github.actor }}-${{ github.ref }}
 
@@ -14,7 +14,7 @@ permissions:
   id-token: write
 jobs:
   terraform:
-    name: terraform ci/cd
+    name: terraform infrastructure
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
