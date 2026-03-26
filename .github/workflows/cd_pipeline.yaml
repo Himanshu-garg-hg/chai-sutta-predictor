@@ -1,4 +1,4 @@
-name: chai-sutta-predictor with MLflow CI/CD
+name: 3. chai-sutta-predictor with MLflow CI/CD
 run-name: chai-sutta-predictor by ${{ github.actor }} with model version - ${{ github.inputs.model_version }}
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: MLflow Server Deploy
+name: 1. MLflow Server Deploy
 
 on:
   push:
@@ -53,24 +53,23 @@ jobs:
           kubectl apply -f kubernetes/mlflowserver/deployment.yaml
           kubectl apply -f kubernetes/mlflowserver/service.yaml
 
-      # - name: wait for service public IP
-      #   run: |
-      #     for i in {1..60}; do
-      #       IP=$(kubectl get service mlflow-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-      #       if [ -n "$IP" ]; then
-      #         echo "public IP: $IP"
-      #         exit 0
-      #       fi
-      #       echo "waiting for public IP..."
-      #       sleep 10
-      #     done
-      #     echo "timed out waiting for public IP" >&2
-      #     exit 1
-      
-      # - name: Set MLFLOW_SERVER_IP output
-      #   id: get_ip
-      #   run: |
-      #     IP=$(kubectl get service mlflow-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-      #     echo "MLFLOW_SERVER_IP=$IP" >> $GITHUB_ENV
-      #     echo "MLFLOW_SERVER_IP=$IP" >> $GITHUB_OUTPUT
-      #     echo "MLFLOW_SERVER_IP=$IP"
+      - name: Get MLflow IP
+        id: get_ip
+        run: |
+          for i in {1..60}; do
+            IP=$(kubectl get svc mlflow-server-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -n "$IP" ]; then
+              echo "MLFLOW_SERVER_IP=$IP" >> $GITHUB_ENV
+              echo "MLFLOW_SERVER_IP=$IP"
+              exit 0
+            fi
+            echo "waiting for MLflow IP..."
+            sleep 10
+          done
+          echo "MLflow IP not found" >&2
+          exit 1
+
+      - name: Check MLflow health
+        run: |
+          curl --fail http://${{ env.MLFLOW_SERVER_IP }}:5000 || exit 1
+          echo "Using MLflow at http://${{ env.MLFLOW_SERVER_IP }}:5000"
