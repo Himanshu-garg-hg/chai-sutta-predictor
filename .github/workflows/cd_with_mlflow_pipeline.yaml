@@ -45,7 +45,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./chai-sutta-modal
+          context: ./chai-sutta-modal-mlflow
           push: true
           build-args: MODEL_VERSION=v${{ github.inputs.model_version }}
           tags: |
