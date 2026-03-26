@@ -3,7 +3,6 @@ FROM python:3.10-slim
 WORKDIR /app
 
 RUN pip install mlflow azure-storage-blob
-
 RUN mkdir -p /mlflow/artifacts && chmod -R 777 /mlflow
 
 EXPOSE 5000
