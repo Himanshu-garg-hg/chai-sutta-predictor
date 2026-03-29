@@ -35,7 +35,7 @@ jobs:
             -d ./chai-sutta-modal-mlflow/models \
             --account-name modalstorageacc \
             -s chai-sutta-container \
-            --pattern "models/v${{ github.event.inputs.model_version }}/*" \
+            --pattern "models/${{ github.event.inputs.model_version }}/*" \
             --auth-mode login
 
       - run: ls -R ./chai-sutta-modal-mlflow/
@@ -51,7 +51,7 @@ jobs:
         with:
           context: ./chai-sutta-modal-mlflow
           push: true
-          build-args: MODEL_VERSION=v${{ github.event.inputs.model_version }}
+          build-args: MODEL_VERSION=${{ github.event.inputs.model_version }}
           tags: |
             modalacr.azurecr.io/chai-sutta-predictor-image:${{ github.event.inputs.model_version }}
             modalacr.azurecr.io/chai-sutta-predictor-image:latest
@@ -93,7 +93,7 @@ jobs:
           for i in {1..60}; do
             IP=$(kubectl get service chai-sutta-modal-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             if [ -n "$IP" ]; then
-              echo "public IP of model v${{ github.event.inputs.model_version }}: $IP"
+              echo "public IP of model ${{ github.event.inputs.model_version }}: $IP"
               exit 0
             fi
             echo "waiting for public IP..."
