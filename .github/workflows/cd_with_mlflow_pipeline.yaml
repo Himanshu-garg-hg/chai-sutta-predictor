@@ -31,6 +31,7 @@ jobs:
       - name: copy model files from storage account
         run: |
           mkdir -p ./chai-sutta-modal-mlflow/models
+          mkdir -p /tmp/model-download
           az storage blob download-batch \
             -d /tmp/model-download \
             --account-name modalstorageacc \
