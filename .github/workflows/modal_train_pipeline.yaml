@@ -51,6 +51,9 @@ jobs:
         curl --fail http://${{ env.MLFLOW_SERVER_IP }}:5000 || exit 1
         echo "Using MLflow at http://${{ env.MLFLOW_SERVER_IP }}:5000"
 
+    - name: role assignment to access storage account
+      run: |
+        az role assignment create --assignee "6863db71-fcbf-4466-8046-997de5b919c3" --role "Storage Blob Data Contributor" --scope "/subscriptions/a5e53954-5571-4fa4-9dd5-bfc7eda513a4/resourceGroups/k8_modal_rg/providers/Microsoft.Storage/storageAccounts/modalstorageacc"
 
     - name: Set up Python
       uses: actions/setup-python@v2
