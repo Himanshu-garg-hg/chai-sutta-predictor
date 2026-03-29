@@ -31,7 +31,7 @@ jobs:
       - name: copy model files from storage account
         run: |
           az storage blob download-batch \
-            -d ./chai-sutta-modal-mlflow/models \
+            -d ./chai-sutta-modal-mlflow \
             --account-name modalstorageacc \
             -s chai-sutta-container \
             --pattern "models/${{ github.event.inputs.model_version }}/*" \
