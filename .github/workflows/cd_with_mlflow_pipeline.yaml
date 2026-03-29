@@ -20,7 +20,7 @@ jobs:
     
       - name: Install Docker Buildx
         uses: docker/setup-buildx-action@v2
-        
+
       - name: az login using federated credentials
         uses: azure/login@v1
         with:
@@ -34,7 +34,8 @@ jobs:
           az storage blob download-batch \
             -d ./chai-sutta-modal-mlflow/models \
             --account-name modalstorageacc \
-            -s chai-sutta-container/models/v${{ github.inputs.model_version }}
+            -s chai-sutta-container/models/v${{ github.inputs.model_version }} \
+            --auth-mode login
 
       - run: ls -R ./chai-sutta-modal-mlflow/
 
