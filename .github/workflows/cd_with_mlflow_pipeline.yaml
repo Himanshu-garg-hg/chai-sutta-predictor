@@ -1,5 +1,5 @@
 name: 3. chai-sutta-predictor with MLflow CI/CD
-run-name: chai-sutta-predictor by ${{ github.actor }} with model version - ${{ github.inputs.model_version }}
+run-name: chai-sutta-predictor by ${{ github.actor }} with model version - ${{ github.event.inputs.model_version }}
 on:
   workflow_dispatch:
     inputs:
@@ -51,9 +51,9 @@ jobs:
         with:
           context: ./chai-sutta-modal-mlflow
           push: true
-          build-args: MODEL_VERSION=v${{ github.inputs.model_version }}
+          build-args: MODEL_VERSION=v${{ github.event.inputs.model_version }}
           tags: |
-            modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.inputs.model_version }}
+            modalacr.azurecr.io/chai-sutta-predictor-image:${{ github.event.inputs.model_version }}
             modalacr.azurecr.io/chai-sutta-predictor-image:latest
 
   modal_deployment_kubernetes:
@@ -86,14 +86,14 @@ jobs:
 
       - name: update image in deployment
         run: |
-          kubectl set image deployment/chai-sutta-modal-deployment chai-sutta-modal-container=modalacr.azurecr.io/chai-sutta-predictor-image:v${{ github.inputs.model_version }}
+          kubectl set image deployment/chai-sutta-modal-deployment chai-sutta-modal-container=modalacr.azurecr.io/chai-sutta-predictor-image:${{ github.event.inputs.model_version }}
 
       - name: wait for service public IP
         run: |
           for i in {1..60}; do
             IP=$(kubectl get service chai-sutta-modal-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             if [ -n "$IP" ]; then
-              echo "public IP of model v${{ github.inputs.model_version }}: $IP"
+              echo "public IP of model v${{ github.event.inputs.model_version }}: $IP"
               exit 0
             fi
             echo "waiting for public IP..."
