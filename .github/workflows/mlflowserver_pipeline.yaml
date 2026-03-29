@@ -50,6 +50,12 @@ jobs:
       - name: Get AKS credentials
         run: az aks get-credentials --resource-group k8_modal_rg --name k8_modal_aks
 
+      - name: create secret to store storage account key
+        run: |
+          STORAGE_KEY=$(az storage account keys list --resource-group k8_modal_rg --account-name modalstorageacc --query "[0].value" -o tsv)
+          echo "::add-mask::$STORAGE_KEY"
+          kubectl create secret generic storage-account-secret --from-literal=STORAGE_KEY=$STORAGE_KEY
+
       - name: Deploy to AKS using kubectl
         run: |
           kubectl apply -f kubernetes/mlflowserver/deployment.yaml
@@ -76,4 +82,3 @@ jobs:
         run: |
           curl --fail http://${{ env.MLFLOW_SERVER_IP }}:5000 || exit 1
           echo "Using MLflow at http://${{ env.MLFLOW_SERVER_IP }}:5000"
-          
