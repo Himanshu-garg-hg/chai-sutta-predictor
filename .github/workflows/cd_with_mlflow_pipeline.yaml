@@ -32,12 +32,14 @@ jobs:
         run: |
           mkdir -p ./chai-sutta-modal-mlflow/models
           az storage blob download-batch \
-            -d ./chai-sutta-modal-mlflow/models \
+            -d /tmp/model-download \
             --account-name modalstorageacc \
             -s chai-sutta-container \
             --pattern "models/${{ github.event.inputs.model_version }}/*" \
-            --auth-mode login \
-            --strip-components 2
+            --auth-mode login
+          
+          mv /tmp/model-download/models/${{ github.event.inputs.model_version }}/* \
+            ./chai-sutta-modal-mlflow/models/
 
       - run: ls -R ./chai-sutta-modal-mlflow/
 
