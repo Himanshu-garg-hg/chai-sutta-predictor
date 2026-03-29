@@ -76,3 +76,4 @@ jobs:
         run: |
           curl --fail http://${{ env.MLFLOW_SERVER_IP }}:5000 || exit 1
           echo "Using MLflow at http://${{ env.MLFLOW_SERVER_IP }}:5000"
+          
